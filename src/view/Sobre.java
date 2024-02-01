@@ -4,20 +4,19 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 
 import java.awt.Font;
-import java.awt.Color;
+
 import java.awt.EventQueue;
-import java.awt.BorderLayout;
+
 import javax.swing.SwingConstants;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JFormattedTextField;
-import javax.swing.JTextPane;
+
 import java.awt.Toolkit;
 import javax.swing.ImageIcon;
+import java.awt.Rectangle;
 
 public class Sobre extends JDialog {
 
 	public Sobre() {
+		setBounds(new Rectangle(90, 90, 584, 326));
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setModal(true);
@@ -64,7 +63,7 @@ public class Sobre extends JDialog {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Sobre dialog = new Sobre();
+					Login dialog = new Login ();
 					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				}
