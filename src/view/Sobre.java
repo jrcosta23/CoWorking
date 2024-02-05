@@ -16,6 +16,7 @@ import java.awt.Rectangle;
 public class Sobre extends JDialog {
 
 	public Sobre() {
+		setTitle("sobre");
 		setBounds(new Rectangle(90, 90, 584, 326));
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
