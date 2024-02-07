@@ -21,21 +21,21 @@ public class Home extends JDialog {
 		btnUser.setBorderPainted(false);
 		btnUser.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnUser.setIcon(new ImageIcon(Home.class.getResource("/img/user.png")));
-		btnUser.setBounds(71, 101, 96, 96);
+		btnUser.setBounds(10, 11, 96, 96);
 		getContentPane().add(btnUser);
 		
 		JButton btnRoom = new JButton("");
 		btnRoom.setBorderPainted(false);
 		btnRoom.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnRoom.setIcon(new ImageIcon(Home.class.getResource("/img/room.png")));
-		btnRoom.setBounds(237, 101, 96, 96);
+		btnRoom.setBounds(229, 11, 96, 96);
 		getContentPane().add(btnRoom);
 		
 		JButton btnReserve = new JButton("");
 		btnReserve.setBorderPainted(false);
 		btnReserve.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnReserve.setIcon(new ImageIcon(Home.class.getResource("/img/reserve.png")));
-		btnReserve.setBounds(387, 101, 96, 96);
+		btnReserve.setBounds(445, 0, 96, 96);
 		getContentPane().add(btnReserve);
 	}
 	
