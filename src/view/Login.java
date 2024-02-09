@@ -28,9 +28,9 @@ import java.awt.Cursor;
 import javax.swing.ImageIcon;
 
 public class Login extends JDialog {
-	private JLabel imgDatabase;
 	private JTextField inputLogin;
 	private JPasswordField inputSenha;
+	public  JLabel imgDatabase;
 	
 	
 	public Login() {
@@ -86,9 +86,9 @@ public class Login extends JDialog {
 		tituloLogin.setBounds(0, 27, 424, 20);
 		getContentPane().add(tituloLogin);
 		
-		imgDatabase = new JLabel("");
+		 imgDatabase = new JLabel("");
 		imgDatabase.setIcon(new ImageIcon(Login.class.getResource("/img/databaseOff.png")));
-		imgDatabase.setBounds(10, 186, 69, 95);
+		imgDatabase.setBounds(10, 186, 61, 81);
 		getContentPane().add(imgDatabase);
 	}
 	
@@ -156,6 +156,10 @@ public class Login extends JDialog {
 
 					Home home = new Home();
 					home.setVisible(true);
+					
+					ResultSet resultadoExeucao;
+					home.txtUsuarioLogado.setText("Usuário:" + resultadoExecucao.getString(2));
+					
 
 					// Fechar a janela de Login assim que a janela Home abrir (automaticamente)
 					dispose();
