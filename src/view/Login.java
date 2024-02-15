@@ -20,6 +20,7 @@ import javax.swing.JPasswordField;
 import java.awt.Rectangle;
 import javax.swing.SwingConstants;
 
+import Atxy2k.CustomTextField.RestrictedTextField;
 import model.DAO;
 
 import javax.swing.JButton;
@@ -30,17 +31,17 @@ import javax.swing.ImageIcon;
 public class Login extends JDialog {
 	private JTextField inputLogin;
 	private JPasswordField inputSenha;
-	public  JLabel imgDatabase;
-	
-	
+	public JLabel imgDatabase;
+
 	public Login() {
-		
+
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
 				statusConexaoBanco();
 			}
+
 		});
-		
+
 		setTitle("Login");
 		setResizable(false);
 		setBounds(new Rectangle(0, 0, 441, 305));
@@ -65,57 +66,77 @@ public class Login extends JDialog {
 		inputSenha = new JPasswordField();
 		inputSenha.setBounds(132, 127, 195, 20);
 		getContentPane().add(inputSenha);
-		
+
 		JButton btnLogin = new JButton("Entrar");
 		btnLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnLogin.setFont(new Font("Tahoma", Font.BOLD, 12));
 		btnLogin.setBounds(181, 186, 89, 23);
 		getContentPane().add(btnLogin);
-		
+
 		btnLogin.addActionListener(new ActionListener() {
-			public  void actionPerformed(ActionEvent e) {
-			logar();
+			public void actionPerformed(ActionEvent e) {
+				logar();
 			}
 		});
-		
-		
-		
+
 		JLabel tituloLogin = new JLabel("Acessar conta");
 		tituloLogin.setFont(new Font("Tahoma", Font.BOLD, 14));
 		tituloLogin.setHorizontalAlignment(SwingConstants.CENTER);
 		tituloLogin.setBounds(0, 27, 424, 20);
 		getContentPane().add(tituloLogin);
-		
-		 imgDatabase = new JLabel("");
+
+		imgDatabase = new JLabel("");
 		imgDatabase.setIcon(new ImageIcon(Login.class.getResource("/img/databaseOff.png")));
 		imgDatabase.setBounds(10, 186, 61, 81);
 		getContentPane().add(imgDatabase);
+
+		// Acessar o botão "Entrar"com a tecla "Enter"
+		getRootPane().setDefaultButton(btnLogin);
+
+		// Validação dos campos utilizando a biblioteca Atxy2k
+
+		// Validação do campo inputLogin
+		RestrictedTextField validarLogin = new RestrictedTextField(inputLogin,
+				"abcdefghijlmnopqrstuvxyz0123456789_ - .");
+
+		// Determinar o uso de alguns caracteres especiais(_ - .) e alfanuméricos
+		validarLogin.setOnlyCustomCharacters(true);
+
+		// Limitar a somente 20 caracteres no campo login
+		validarLogin.setLimit(20);
+
+		// validação do campo inputSunha
+
+		RestrictedTextField validarSenha = new RestrictedTextField(inputSenha);
+
+		// Limitar a somente 15 caracteres no campo senha
+		validarSenha.setLimit(15);
+
+		// Desativar a tecla epeço no campo senha
+
 	}
-	
+
 	DAO dao = new DAO();
 
-	
 	private void statusConexaoBanco() {
 		try {
 			Connection conexaoBanco = dao.conectar();
-			
+
 			if (conexaoBanco == null) {
-				//Escolher a imagem para quando não há conexão
-				imgDatabase.setIcon(new ImageIcon (Login.class.getResource("/img/databaseOff.png")));
+				// Escolher a imagem para quando não há conexão
+				imgDatabase.setIcon(new ImageIcon(Login.class.getResource("/img/databaseOff.png")));
 			}
-			
+
 			else {
-				//Trocar a imagem se houver conexão
-				imgDatabase.setIcon(new ImageIcon (Login.class.getResource("/img/databaseOn.png")));
+				// Trocar a imagem se houver conexão
+				imgDatabase.setIcon(new ImageIcon(Login.class.getResource("/img/databaseOn.png")));
 			}
 			conexaoBanco.close();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 		}
 	}
 
-	
 	private void logar() {
 		String read = "select * from funcionario where login=? and senha=md5(?)";
 
@@ -156,10 +177,9 @@ public class Login extends JDialog {
 
 					Home home = new Home();
 					home.setVisible(true);
-					
+
 					ResultSet resultadoExeucao;
 					home.txtUsuarioLogado.setText("Usuário:" + resultadoExecucao.getString(2));
-					
 
 					// Fechar a janela de Login assim que a janela Home abrir (automaticamente)
 					dispose();
@@ -185,9 +205,7 @@ public class Login extends JDialog {
 			}
 		}
 	}
-		
-	
-	
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -197,7 +215,7 @@ public class Login extends JDialog {
 					dialog.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
-					
+
 				}
 			}
 		});
