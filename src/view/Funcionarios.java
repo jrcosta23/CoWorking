@@ -5,17 +5,23 @@ import javax.swing.JDialog;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import model.DAO;
+
 import javax.swing.JPasswordField;
 import javax.swing.ImageIcon;
 import java.awt.Cursor;
+import javax.swing.JComboBox;
 
 public class Funcionarios extends JDialog {
 	private JTextField inputNome;
 	private JTextField inputLogin;
 	private JTextField inputEmail;
-	private JTextField inputPerfil;
 	private JPasswordField inputSenha;
 
 	public Funcionarios() {
@@ -60,11 +66,6 @@ public class Funcionarios extends JDialog {
 		getContentPane().add(inputEmail);
 		inputEmail.setColumns(10);
 		
-		inputPerfil = new JTextField();
-		inputPerfil.setBounds(363, 239, 224, 20);
-		getContentPane().add(inputPerfil);
-		inputPerfil.setColumns(10);
-		
 		inputSenha = new JPasswordField();
 		inputSenha.setBounds(357, 130, 230, 20);
 		getContentPane().add(inputSenha);
@@ -86,8 +87,53 @@ public class Funcionarios extends JDialog {
 		imgDelete.setIcon(new ImageIcon(Funcionarios.class.getResource("/img/delete.png")));
 		imgDelete.setBounds(470, 270, 66, 49);
 		getContentPane().add(imgDelete);
+		
+		inputPerfil = new JComboBox();
+		inputPerfil.setBounds(349, 238, 238, 22);
+		getContentPane().add(inputPerfil);
 
 	}
+	
+	
+	//Criar um objeto da classe DAO para estabelecer conexão com  banco
+	DAO dao = new DAO();
+	private JComboBox inputPerfil;
+	
+	
+	
+	private void adicionarFuncionario() {
+		String create = "insert into funcionario(nomeFun, login, senha, perfil,email)value (?,?,?);";
+		
+		try {
+			
+	      // Estabelecer a conexao 
+			 Connection conexaoBanco = dao.conectar();
+			 
+		  //Preparar a execusão  do script SQL 
+			 PreparedStatement executarSQL = conexaoBanco.prepareStatement(create);
+			
+			
+	     // Substituir os pontos  de interrogação pelo conteú das caixas de texto (inputs)
+			 
+			 
+			 executarSQL.setSring(1,nomeFunc.getText());
+			 executarSQL.setString(2, loginFunc.getTxt());
+			 executarSQL.setString(3, senhaFunc.getTxt());
+			 
+			//Trocar o componente do perfil
+			 executarSQL.setString(5,.getTxt());
+			 
+			 
+			 
+		}
+		
+		catch (Exception  e) {
+			
+		}
+		
+		
+	}
+	
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {

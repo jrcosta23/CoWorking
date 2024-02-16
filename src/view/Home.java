@@ -27,7 +27,8 @@ public class Home extends JDialog {
 	public JPanel panelUsuario;
 	public JLabel txtUsuarioLogado;
 	public JLabel txtData;
-
+	public JLabel txtPerfilLogado;
+	
 	// Construtor
 	public Home() {
 
@@ -95,13 +96,18 @@ public class Home extends JDialog {
 		panelUsuario.setLayout(null);
 
 		txtUsuarioLogado = new JLabel("");
-		txtUsuarioLogado.setBounds(10, 37, 227, 15);
+		txtUsuarioLogado.setBounds(10, 0, 173, 30);
 		panelUsuario.add(txtUsuarioLogado);
 
 		txtData = new JLabel("");
 		txtData.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		txtData.setBounds(247, 26, 280, 15);
 		panelUsuario.add(txtData);
+		
+		
+		txtPerfilLogado = new JLabel("");
+		txtPerfilLogado.setBounds(10, 41, 173, 30);
+		panelUsuario.add(txtPerfilLogado);
 
 		btnReserve.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
