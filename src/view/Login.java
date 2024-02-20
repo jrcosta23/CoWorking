@@ -188,8 +188,9 @@ public class Login extends JDialog {
 				else {
 					// Criar um alerta (pop-up) que informe ao usuário que login e/ou senha estão
 					// inválidos
-
-					JOptionPane.showMessageDialog(null, "Login e/ou senha não está válidos!");
+					
+					
+					JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso !");
 					inputLogin.setText(null);
 					inputSenha.setText(null);
 					inputLogin.requestFocus();

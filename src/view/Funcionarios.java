@@ -7,8 +7,12 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 import javax.swing.JLabel;
@@ -16,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import model.DAO;
+import net.proteanit.sql.DbUtils;
 
 import javax.swing.JPasswordField;
 import javax.swing.ImageIcon;
@@ -24,6 +29,8 @@ import javax.swing.JButton;
 import java.awt.Cursor;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class Funcionarios extends JDialog {
 	private JTextField inputNome;
@@ -39,11 +46,11 @@ public class Funcionarios extends JDialog {
 		getContentPane().setLayout(null);
 
 		JLabel nomeFunc = new JLabel("Nome:");
-		nomeFunc.setBounds(26, 44, 46, 14);
+		nomeFunc.setBounds(9, 44, 46, 14);
 		getContentPane().add(nomeFunc);
 
 		JLabel loginFunc = new JLabel("Login:");
-		loginFunc.setBounds(26, 133, 46, 14);
+		loginFunc.setBounds(9, 133, 46, 14);
 		getContentPane().add(loginFunc);
 
 		JLabel senhaFunc = new JLabel("Senha:");
@@ -51,7 +58,7 @@ public class Funcionarios extends JDialog {
 		getContentPane().add(senhaFunc);
 
 		JLabel emailFunc = new JLabel("E-mail:");
-		emailFunc.setBounds(26, 242, 46, 14);
+		emailFunc.setBounds(9, 242, 46, 14);
 		getContentPane().add(emailFunc);
 
 		JLabel perfilFunc = new JLabel("Perfil:");
@@ -59,17 +66,25 @@ public class Funcionarios extends JDialog {
 		getContentPane().add(perfilFunc);
 
 		inputNome = new JTextField();
-		inputNome.setBounds(82, 41, 482, 20);
+		inputNome.setBounds(41, 41, 523, 20);
 		getContentPane().add(inputNome);
 		inputNome.setColumns(10);
 
+
+		inputNome.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				buscarFuncionarioNaTabela();
+
+			}
+		});
+
 		inputLogin = new JTextField();
-		inputLogin.setBounds(65, 130, 238, 20);
+		inputLogin.setBounds(41, 130, 262, 20);
 		getContentPane().add(inputLogin);
 		inputLogin.setColumns(10);
 
 		inputEmail = new JTextField();
-		inputEmail.setBounds(65, 239, 238, 20);
+		inputEmail.setBounds(41, 239, 262, 20);
 		getContentPane().add(inputEmail);
 		inputEmail.setColumns(10);
 
@@ -103,15 +118,28 @@ public class Funcionarios extends JDialog {
 		getContentPane().add(imgDelete);
 
 		inputPerfil = new JComboBox();
-		inputPerfil.setModel(new DefaultComboBoxModel(new String[] {"", "", "Administrador", "Gerência", "Atendimento", "Suporte"}));
+		inputPerfil.setModel(new DefaultComboBoxModel(
+				new String[] { "", "", "Administrador", "Gerência", "Atendimento", "Suporte" }));
 		inputPerfil.setBounds(349, 238, 238, 22);
 		getContentPane().add(inputPerfil);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(41, 108, 2, 2);
+		getContentPane().add(scrollPane);
+
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(41, 64, 523, 52);
+		getContentPane().add(scrollPane_1);
+
+		tblFuncionarios = new JTable();
+		scrollPane_1.setColumnHeaderView(tblFuncionarios);
 
 	}
 
 	// Criar um objeto da classe DAO para estabelecer conexão com banco
 	DAO dao = new DAO();
 	private JComboBox inputPerfil;
+	private JTable tblFuncionarios;
 
 	private void adicionarFuncionario() {
 		String create = "insert into funcionario(nomeFunc, login, senha, Perfil, email)values (?, ?,md5(?), ?, ?);";
@@ -130,15 +158,16 @@ public class Funcionarios extends JDialog {
 			executarSQL.setString(2, inputLogin.getText());
 			executarSQL.setString(3, inputSenha.getText());
 
-			 executarSQL.setString(4, inputPerfil.getSelectedItem().toString());
+			executarSQL.setString(4, inputPerfil.getSelectedItem().toString());
 
 			executarSQL.setString(5, inputEmail.getText());
 
 			// Executar os coamndos SQL e inserir o funcionário no banco de dados
 			executarSQL.executeUpdate();
-
+			JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso !");
 			conexaoBanco.close();
 
+			limparCampos();
 		}
 
 		catch (SQLIntegrityConstraintViolationException erro) {
@@ -149,6 +178,59 @@ public class Funcionarios extends JDialog {
 			System.out.println(e);
 
 		}
+
+	}
+
+	private void buscarFuncionarioNaTabela() {
+		String readTabela = "Select idFuncionario as ID, nomeFunc as Nome, email as Email from funcionario"
+				+ " where nomeFunc like ?;";
+
+		try {
+
+			// Estabelecer a conexão
+			Connection conexaoBanco = dao.conectar();
+
+			// Preparar a excução dos comandos SQL
+			PreparedStatement executarSQL = conexaoBanco.prepareStatement(readTabela);
+
+			// substituir o ? pelo conteúdo da caixa dede texto
+			executarSQL.setString(1, inputNome.getText() + "%");
+
+			// Executar o comando SQL
+			ResultSet resultadoExecucao = executarSQL.executeQuery();
+
+			// Exibir o resultado na tabela, utlizção da biblioteca rs2xml para "popular"
+			// a tabela
+
+			tblFuncionarios.setModel(DbUtils.resultSetToTableModel(resultadoExecucao));
+
+			conexaoBanco.close();
+
+		}
+
+		catch (Exception e) {
+
+			System.out.println(e);
+		}
+	}
+
+	private void setarCaixasTexto() {
+
+		// Crar uma variável para receber a linha da tabela
+		int setarLinha = tblFuncionarios.getSelectedRow();
+
+	}
+
+	private void limparCampos() {
+		inputNome.setText(null);
+		inputLogin.setText(null);
+		inputSenha.setText(null);
+		inputEmail.setText(null);
+		// Para limpar componente JComboBox
+		inputPerfil.setSelectedIndex(-1);
+
+		// Posicionar o cursor de volta no campo Nome
+		inputNome.requestFocus();
 
 	}
 
