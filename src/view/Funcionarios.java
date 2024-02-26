@@ -196,80 +196,134 @@ public class Funcionarios extends JDialog {
 	private JTextField inputID;
 
 	private void adicionarFuncionario() {
-		String create = "insert into funcionario(nomeFunc, login, senha, perfil, email)values (?, ?,md5(?), ?, ?);";
 
-		try {
+		String create = "insert into funcionario(nomeFunc, login, senha, perfil, email) values (?, ?,md5(?), ?, ?);";
 
-			// Estabelecer a conexao
-			Connection conexaoBanco = dao.conectar();
-
-			// Preparar a execusão do script SQL
-			PreparedStatement executarSQL = conexaoBanco.prepareStatement(create);
-
-			// Substituir os pontos de interrogação pelo conteú das caixas de texto (inputs)
-
-			executarSQL.setString(1, inputNome.getText());
-			executarSQL.setString(2, inputLogin.getText());
-			executarSQL.setString(3, inputSenha.getText());
-
-			executarSQL.setString(4, inputPerfil.getSelectedItem().toString());
-
-			executarSQL.setString(5, inputEmail.getText());
-
-			// Executar os coamndos SQL e inserir o funcionário no banco de dados
-			executarSQL.executeUpdate();
-			JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso !");
-			conexaoBanco.close();
-
-			limparCampos();
+		// Validação da senha do usuário
+		if (inputSenha.getPassword().length == 0) {
+			JOptionPane.showMessageDialog(null, "Senha do usuário obrigatória!");
+			inputSenha.requestFocus();
 		}
 
-		catch (SQLIntegrityConstraintViolationException erro) {
-			JOptionPane.showMessageDialog(null, "Login em uso.\nEscolha outro nome de usuário.");
+		// Validação do login do usuário
+		else if (inputLogin.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Login do usuário obrigatório!");
+			inputLogin.requestFocus();
 		}
 
-		catch (Exception e) {
-			System.out.println(e);
-
+		// Validação do login do usuário
+		else if (inputEmail.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Email do usuário obrigatório!");
+			inputEmail.requestFocus();
 		}
 
+		// Validação do login do usuário
+		else if (inputNome.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Nome do usuário obrigatório!");
+			inputNome.requestFocus();
+		}
+
+		else {
+
+			try {
+
+				// Estabelecer a conexao
+				Connection conexaoBanco = dao.conectar();
+
+				// Preparar a execusão do script SQL
+				PreparedStatement executarSQL = conexaoBanco.prepareStatement(create);
+
+				// Substituir os pontos de interrogação pelo conteú das caixas de texto (inputs)
+
+				executarSQL.setString(1, inputNome.getText());
+				executarSQL.setString(2, inputLogin.getText());
+				executarSQL.setString(3, inputSenha.getText());
+
+				executarSQL.setString(4, inputPerfil.getSelectedItem().toString());
+
+				executarSQL.setString(5, inputEmail.getText());
+
+				// Executar os coamndos SQL e inserir o funcionário no banco de dados
+				executarSQL.executeUpdate();
+				JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso !");
+				conexaoBanco.close();
+
+				limparCampos();
+			}
+
+			catch (SQLIntegrityConstraintViolationException erro) {
+				JOptionPane.showMessageDialog(null, "Login em uso.\nEscolha outro nome de usuário.");
+			}
+
+			catch (Exception e) {
+				System.out.println(e);
+
+			}
+		}
 	}
 
 	private void atualizarFuncionario() {
 		String update = "update funcionario set nomeFunc=?, login=?, senha=md5(?), perfil=?, email=? where idFuncionario = ?";
 
-		try {
-
-			// Estabelecer a conexao
-			Connection conexaoBanco = dao.conectar();
-
-			// Preparar a execusão do script SQL
-			PreparedStatement executarSQL = conexaoBanco.prepareStatement(update);
-
-			// Substituir os pontos de interrogação pelo conteú das caixas de texto (inputs)
-
-			executarSQL.setString(1, inputNome.getText());
-			executarSQL.setString(2, inputLogin.getText());
-			executarSQL.setString(3, inputSenha.getText());
-			executarSQL.setString(4, inputPerfil.getSelectedItem().toString());
-			executarSQL.setString(5, inputEmail.getText());
-			executarSQL.setString(6, inputID.getText());
-
-			// Executar os coamndos SQL e atualizar o funcionário no banco de dados
-			executarSQL.executeUpdate();
-			JOptionPane.showMessageDialog(null, "Usuário atualizado com sucesso!");
-			conexaoBanco.close();
-
-			limparCampos();
+		// Validação da senha do usuário
+		if (inputSenha.getPassword().length == 0) {
+			JOptionPane.showMessageDialog(null, "Senha do usuário obrigatória!");
+			inputSenha.requestFocus();
 		}
 
-		catch (SQLIntegrityConstraintViolationException erro) {
-			JOptionPane.showMessageDialog(null, "Login e/ou email em uso. Utilize outros dados");
+		// Validação do login do usuário
+		else if (inputLogin.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Login do usuário obrigatório!");
+			inputLogin.requestFocus();
 		}
 
-		catch (Exception e) {
-			System.out.println(e);
+		// Validação do login do usuário
+		else if (inputEmail.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Email do usuário obrigatório!");
+			inputEmail.requestFocus();
+		}
 
+		// Validação do login do usuário
+		else if (inputNome.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Nome do usuário obrigatório!");
+			inputNome.requestFocus();
+		}
+
+		else {
+
+			try {
+
+				// Estabelecer a conexao
+				Connection conexaoBanco = dao.conectar();
+
+				// Preparar a execusão do script SQL
+				PreparedStatement executarSQL = conexaoBanco.prepareStatement(update);
+
+				// Substituir os pontos de interrogação pelo conteú das caixas de texto (inputs)
+
+				executarSQL.setString(1, inputNome.getText());
+				executarSQL.setString(2, inputLogin.getText());
+				executarSQL.setString(3, inputSenha.getText());
+				executarSQL.setString(4, inputPerfil.getSelectedItem().toString());
+				executarSQL.setString(5, inputEmail.getText());
+				executarSQL.setString(6, inputID.getText());
+
+				// Executar os coamndos SQL e atualizar o funcionário no banco de dados
+				executarSQL.executeUpdate();
+				JOptionPane.showMessageDialog(null, "Usuário atualizado com sucesso!");
+				conexaoBanco.close();
+
+				limparCampos();
+			}
+
+			catch (SQLIntegrityConstraintViolationException erro) {
+				JOptionPane.showMessageDialog(null, "Login e/ou email em uso. Utilize outros dados");
+			}
+
+			catch (Exception e) {
+				System.out.println(e);
+
+			}
 		}
 	}
 
