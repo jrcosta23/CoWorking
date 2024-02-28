@@ -7,6 +7,8 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -29,11 +31,11 @@ import javax.swing.JButton;
 
 import java.awt.Cursor;
 import javax.swing.JComboBox;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.Color;
+import javax.swing.JRadioButton;
 
 public class Salas extends JDialog {
 	private JTextField inputOcup;
@@ -50,28 +52,28 @@ public class Salas extends JDialog {
 		getContentPane().setLayout(null);
 
 		JLabel tipoSala = new JLabel("Categoria:");
-		tipoSala.setBounds(24, 58, 74, 14);
+		tipoSala.setBounds(24, 29, 74, 14);
 		getContentPane().add(tipoSala);
 
 		JLabel codSala = new JLabel("Código:");
-		codSala.setBounds(24, 249, 46, 14);
+		codSala.setBounds(24, 268, 74, 14);
 		getContentPane().add(codSala);
 
 		JLabel andarSala = new JLabel("Andar:");
-		andarSala.setBounds(298, 249, 46, 14);
+		andarSala.setBounds(392, 203, 57, 14);
 		getContentPane().add(andarSala);
 
-		JLabel ocupSala = new JLabel("Ocupação máxima:");
-		ocupSala.setBounds(298, 312, 98, 14);
+		JLabel ocupSala = new JLabel("Ocupação:");
+		ocupSala.setBounds(376, 268, 73, 14);
 		getContentPane().add(ocupSala);
 
 		JLabel numSala = new JLabel("Número:");
-		numSala.setBounds(24, 314, 46, 14);
+		numSala.setBounds(24, 203, 74, 14);
 		getContentPane().add(numSala);
 
 		inputOcup = new JTextField();
 		inputOcup.setColumns(10);
-		inputOcup.setBounds(392, 309, 86, 20);
+		inputOcup.setBounds(451, 265, 160, 20);
 		getContentPane().add(inputOcup);
 
 		imgCreate = new JButton("");
@@ -98,7 +100,7 @@ public class Salas extends JDialog {
 
 		imgUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// atualizarFuncionario();
+				atualizarSala();
 			}
 		});
 
@@ -111,7 +113,7 @@ public class Salas extends JDialog {
 		getContentPane().add(imgDelete);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(95, 83, 516, 90);
+		scrollPane.setBounds(95, 54, 516, 90);
 		getContentPane().add(scrollPane);
 
 		tblSalas = new JTable();
@@ -121,53 +123,50 @@ public class Salas extends JDialog {
 		btnPesquisar.setBackground(new Color(240, 240, 240));
 		btnPesquisar.setBorderPainted(false);
 		btnPesquisar.setIcon(new ImageIcon(Salas.class.getResource("/img/search.png")));
-		btnPesquisar.setBounds(284, 184, 46, 33);
+		btnPesquisar.setBounds(265, 193, 43, 33);
 		getContentPane().add(btnPesquisar);
-
-		JLabel IDSala = new JLabel("ID:");
-		IDSala.setBounds(24, 192, 46, 14);
-		getContentPane().add(IDSala);
 
 		inputID = new JTextField();
 		inputID.setEnabled(false);
-		inputID.setBounds(74, 189, 200, 20);
+		inputID.setBounds(24, 160, 40, 20);
 		getContentPane().add(inputID);
 		inputID.setColumns(10);
 
+		// Deixar o campo ID invisível
+		inputID.setVisible(false);
+
 		inputCategoria = new JComboBox();
+		inputCategoria.setToolTipText("");
 		inputCategoria.setModel(new DefaultComboBoxModel(new String[] { "", "Sala de reunião", "Sala de conferência",
 				"Espaço de eventos", "Escritório privado" }));
-		inputCategoria.setBounds(95, 54, 443, 22);
+		inputCategoria.setBounds(95, 25, 516, 22);
 		getContentPane().add(inputCategoria);
 
-		
-		inputCategoria.addMouseListener(new MouseAdapter() {
-			public void mouseClieecked(MouseEvent e ) {
+		inputCategoria.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				buscarSalaNaTabela();
-				
 			}
 		});
-		
-		
+
 		inputCod = new JComboBox();
 		inputCod.setModel(new DefaultComboBoxModel(new String[] { "", "REU", "CONF", "EVENT", "PRIV" }));
-		inputCod.setBounds(74, 245, 147, 22);
+		inputCod.setBounds(95, 265, 160, 22);
 		getContentPane().add(inputCod);
 
 		inputAndar = new JComboBox();
 		inputAndar.setModel(
 				new DefaultComboBoxModel(new String[] { "", "Subsolo", "Térreo", "1º andar", "2º andar", "3º andar" }));
-		inputAndar.setBounds(338, 245, 157, 22);
+		inputAndar.setBounds(451, 200, 160, 22);
 		getContentPane().add(inputAndar);
 
 		inputNum = new JTextField();
-		inputNum.setBounds(74, 309, 86, 20);
+		inputNum.setBounds(95, 200, 160, 20);
 		getContentPane().add(inputNum);
 		inputNum.setColumns(10);
 
 		btnPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// btnBuscarFuncionario();
+				btnBuscarSala();
 			}
 		});
 
@@ -189,37 +188,38 @@ public class Salas extends JDialog {
 	private JTextField inputNum;
 
 	private void adicionarSala() {
-		String create = "insert into salas (andarSala, numeroSala, tipoSala, codigoSala, ocupacaoSala) values (?, ?, ?, ?, ?);";
+		String create = "insert into salas (andarSala, numeroSala, tipoSala, codigoSala, ocupacaoSala)"
+				+ " values (?, ?, ?, ?, ?);";
 
+		// Validação da categoria (tipo) da sala
 		if (inputCategoria.getSelectedItem().equals("")) {
-			JOptionPane.showMessageDialog(null, "Categoria da  sala obrigatóio!");
+			JOptionPane.showMessageDialog(null, "Categoria da sala obrigatória!");
 			inputCategoria.requestFocus();
 		}
-		
-		
+
+		// Validação do código da sala
 		else if (inputCod.getSelectedItem().equals("")) {
-			JOptionPane.showMessageDialog(null, "Codigo sala obrigatóio!");
+			JOptionPane.showMessageDialog(null, "Código da sala obrigatório!");
 			inputCod.requestFocus();
 		}
 
-	
+		// Validação do andar da sala
 		else if (inputAndar.getSelectedItem().equals("")) {
-			JOptionPane.showMessageDialog(null, "Andar da sala obrigatóio!");
+			JOptionPane.showMessageDialog(null, "Andar da sala obrigatório!");
 			inputAndar.requestFocus();
 		}
 
-		
+		// Validação do número da sala
 		else if (inputNum.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Número da  sala obrigatóio!");
+			JOptionPane.showMessageDialog(null, "Número da sala obrigatório!");
 			inputNum.requestFocus();
 		}
 
-	
+		// Validação da ocupação máxima da sala
 		else if (inputOcup.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Ocpação máxima obrigatório!");
+			JOptionPane.showMessageDialog(null, "Ocupação máxima obrigatória!");
 			inputOcup.requestFocus();
 		}
-		
 
 		else {
 
@@ -237,10 +237,8 @@ public class Salas extends JDialog {
 				executarSQL.setString(3, inputCategoria.getSelectedItem().toString());
 				executarSQL.setString(4, inputCod.getSelectedItem().toString());
 				executarSQL.setString(5, inputOcup.getText());
-				
-				
 
-				// Executar os comandos SQL e inserir o funcionário no banco de dados
+				// Executar os comandos SQL e inserir a sala no banco de dados
 				executarSQL.executeUpdate();
 
 				JOptionPane.showMessageDialog(null, "Sala cadastrada com sucesso!");
@@ -260,7 +258,7 @@ public class Salas extends JDialog {
 	}
 
 	private void buscarSalaNaTabela() {
-		String readTabela = "select tipoSala as Categoria, andarSala as andar, numeroSala as Número from salas where tipoSala = ?;";
+		String readTabela = "select tipoSala as Categoria, andarSala as Andar, numeroSala as Número from salas where tipoSala = ?;";
 
 		try {
 			// Estabelecer a conexão
@@ -291,38 +289,41 @@ public class Salas extends JDialog {
 
 		// Criar uma variável para receber a linha da tabela
 		int setarLinha = tblSalas.getSelectedRow();
-		
+
+		// Setar o andar e o número da sala selecionada na linha específica da tabela
+		// que o usuário clicou
+		inputAndar.setSelectedItem(tblSalas.getModel().getValueAt(setarLinha, 1).toString());
+
 		inputNum.setText(tblSalas.getModel().getValueAt(setarLinha, 2).toString());
 
 	}
 
-	// Criar método para buscar funcionário pelo botão Pesquisar
+	// Criar método para buscar sala pelo botão Pesquisar
 	private void btnBuscarSala() {
-		
-		String readBtn = "select * from funcionario where idFuncionario = ?;";
+		String readBtn = "select * from salas where numeroSala = ? and andarSala = ?;";
 
 		try {
-			
 			// Estabelecer a conexão
 			Connection conexaoBanco = dao.conectar();
 
 			// Preparar a execução do comando SQL
 			PreparedStatement executarSQL = conexaoBanco.prepareStatement(readBtn);
 
-			// Substituir o ponto de interrogação pelo conteúdo da caixa de texto (número da sala)
+			// Substituir o ponto de interrogação pelo conteúdo da caixa de texto (número da
+			// sala)
 			executarSQL.setString(1, inputNum.getText());
+			executarSQL.setString(2, inputAndar.getSelectedItem().toString());
 
-			// Executar o comando SQL e exibir o resultado no formulário funcionário (todos
+			// Executar o comando SQL e exibir o resultado no formulário salas (todos
 			// os seus dados)
 			ResultSet resultadoExecucao = executarSQL.executeQuery();
 
 			if (resultadoExecucao.next()) {
 				// Preencher os campos do formulário
+				inputID.setText(resultadoExecucao.getString(1));
 				inputAndar.setSelectedItem(resultadoExecucao.getString(2));
 				inputCod.setSelectedItem(resultadoExecucao.getString(5));
 				inputOcup.setText(resultadoExecucao.getString(6));
-				
-
 			}
 
 			conexaoBanco.close();
@@ -332,62 +333,110 @@ public class Salas extends JDialog {
 			System.out.println(e);
 		}
 	}
-	
-	
 
-	private void atualizarFuncionario() {
-		String update = "update funcionario set nomeFunc = ?, login = ?, senha = md5(?), email = ?,"
-				+ " perfil = ? where idFuncionario = ?;";
+	private void atualizarSala() {
+		String update = "update salas set andarSala = ?, numeroSala = ?, tipoSala = ?, codigoSala = ?,"
+				+ " ocupacaoSala = ? where idSala = ?;";
+
+		// Validação da categoria (tipo) da sala
+		if (inputCategoria.getSelectedItem().equals("")) {
+			JOptionPane.showMessageDialog(null, "Categoria da sala obrigatória!");
+			inputCategoria.requestFocus();
+		}
+
+		// Validação do código da sala
+		else if (inputCod.getSelectedItem().equals("")) {
+			JOptionPane.showMessageDialog(null, "Código da sala obrigatório!");
+			inputCod.requestFocus();
+		}
+
+		// Validação do andar da sala
+		else if (inputAndar.getSelectedItem().equals("")) {
+			JOptionPane.showMessageDialog(null, "Andar da sala obrigatório!");
+			inputAndar.requestFocus();
+		}
+
+		// Validação do número da sala
+		else if (inputNum.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Número da sala obrigatório!");
+			inputNum.requestFocus();
+		}
+
+		// Validação da ocupação máxima da sala
+		else if (inputOcup.getText().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Ocupação máxima obrigatória!");
+			inputOcup.requestFocus();
+		}
+
+		else {
+			try {
+				// Estabelecer a conexão
+				Connection conexaoBanco = dao.conectar();
+
+				// Preparar a execusão do script SQL
+				PreparedStatement executarSQL = conexaoBanco.prepareStatement(update);
+
+				// Substituir os pontos de interrogação pelo conteúdo das caixas de texto
+				// (inputs)
+				executarSQL.setString(1, inputAndar.getSelectedItem().toString());
+				executarSQL.setString(2, inputNum.getText());
+				executarSQL.setString(3, inputCategoria.getSelectedItem().toString());
+				executarSQL.setString(4, inputCod.getSelectedItem().toString());
+				executarSQL.setString(5, inputOcup.getText());
+				executarSQL.setString(6, inputID.getText());
+
+				// Executar os comandos SQL e atualizar a sala no banco de dados
+				executarSQL.executeUpdate();
+
+				JOptionPane.showMessageDialog(null, "Dados da sala atualizados com sucesso!");
+				limparCampos();
+
+				conexaoBanco.close();
+			}
+
+			catch (SQLIntegrityConstraintViolationException error) {
+				JOptionPane.showMessageDialog(null, "Ocorreu um erro. \nEsta sala já encontra-se cadastrada.");
+			}
+
+			catch (Exception e) {
+				System.out.println(e);
+			}
+		}
+	}
+
+	private void deletarSala() {
+		String delete = "delete salas where idSala = ?;";
 
 		try {
-			// Estabelecer a conexão
 			Connection conexaoBanco = dao.conectar();
 
-			// Preparar a execusão do script SQL
-			PreparedStatement executarSQL = conexaoBanco.prepareStatement(update);
+			PreparedStatement executarSQL = conexaoBanco.prepareStatement(delete);
+			executarSQL.setString(1, inputID.getText());
 
-			// Substituir os pontos de interrogação pelo conteúdo das caixas de texto
-			// (inputs)
-			executarSQL.setString(1, inputCategoria.getToolTipText());
-			executarSQL.setString(2, inputCod.getToolTipText());
-			executarSQL.setString(3, inputAndar.getToolTipText());
-			executarSQL.setString(4, inputOcup.getText());
-			executarSQL.setString(5, inputNum.getSelectedText().toString());
-	
-
-			// Executar os comandos SQL e atualizar o funcionário no banco de dados
 			executarSQL.executeUpdate();
-
-			JOptionPane.showMessageDialog(null, "Usuário atualizado com sucesso!");
+			
+			
+			JOptionPane.showMessageDialog(null, "Sala deleta com sucesso !");
+			
 			limparCampos();
-
 			conexaoBanco.close();
 		}
 
-		catch (SQLIntegrityConstraintViolationException error) {
-			JOptionPane.showMessageDialog(null, "Ocorreu um erro. \nO login e/ou e-mail já estão sendo usados");
-		}
-
 		catch (Exception e) {
-			System.out.println(e);
+        System.out.println(e);
+        
 		}
 
 	}
 
-	
 	private void limparCampos() {
-		inputCategoria.setSelectedItem(-1);
-		inputAndar.setSelectedItem(-1);
-		inputCod.setSelectedItem(-1);
+		inputCategoria.setSelectedItem(null);
+		inputCod.setSelectedItem(null);
+		inputAndar.setSelectedItem(null);
 		inputNum.setText(null);
 		inputOcup.setText(null);
-		
-
-	
 		inputCategoria.requestFocus();
 	}
-	
-	
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
